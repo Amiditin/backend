@@ -1,9 +1,24 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+
+import { ResearcherEntity } from '@/researchers/entities/researcher.entity';
 
 @Entity('organization')
 export class OrganizationEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @Column()
   name: string;
@@ -25,4 +40,7 @@ export class OrganizationEntity {
 
   @Column({ nullable: true })
   website: string;
+
+  @OneToMany(() => ResearcherEntity, (researcher) => researcher.organization)
+  researchers: ResearcherEntity[];
 }

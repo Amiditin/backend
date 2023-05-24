@@ -1,38 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
 import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
+import { JwtAuthGuard } from '@/auth/guards/jwt.guard';
 
 const organizationsName = 'organizations';
 
 @Controller(organizationsName)
 @ApiTags(organizationsName)
+@ApiBearerAuth()
 export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
-
-  @Post()
-  create(@Body() createOrganizationDto: CreateOrganizationDto) {
-    return this.organizationsService.create(createOrganizationDto);
-  }
 
   @Get()
   findAll() {
     return this.organizationsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.organizationsService.findOne(+id);
+  @Post()
+  create(@Body() createDto: CreateOrganizationDto) {
+    return this.organizationsService.create(createDto);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrganizationDto: UpdateOrganizationDto) {
-    return this.organizationsService.update(+id, updateOrganizationDto);
+  @UseGuards(JwtAuthGuard)
+  update(@Param('id') id: string, @Body() updateDto: UpdateOrganizationDto) {
+    return this.organizationsService.update(id, updateDto);
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   remove(@Param('id') id: string) {
-    return this.organizationsService.remove(+id);
+    return this.organizationsService.remove(id);
   }
 }
