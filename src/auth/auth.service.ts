@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 
@@ -6,15 +6,22 @@ import { ResearchersService } from '@/researchers/researchers.service';
 import { CreateResearcherDto } from '@/researchers/dto/create-researcher.dto';
 
 import type { IUser } from './auth.types';
+import { ResearcherEntity } from '@/researchers/entities/researcher.entity';
 
 @Injectable()
 export class AuthService {
   constructor(private researchersService: ResearchersService, private jwtService: JwtService) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
+  async validateUser(email: string, password: string): Promise<Omit<ResearcherEntity, 'password'>> {
     const user = await this.researchersService.findByEmail(email);
 
-    if (!user || !argon2.verify(user.password, password)) {
+    if (!user) {
+      throw new UnauthorizedException('Email or password are incorrect');
+    }
+
+    const isPasswordsMatch = await argon2.verify(user.password, password);
+
+    if (!isPasswordsMatch) {
       throw new BadRequestException('Email or password are incorrect');
     }
 

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsFQDN, IsMobilePhone, MinLength } from 'class-validator';
+import { IsEmail, IsFQDN, IsMobilePhone, IsOptional, MinLength } from 'class-validator';
 
 export class CreateOrganizationDto {
   @ApiProperty({ default: 'Общество с ограниченной ответственностью' })
@@ -7,6 +7,7 @@ export class CreateOrganizationDto {
   name: string;
 
   @ApiProperty({ default: 'ООО' })
+  @IsOptional()
   abbreviation: string | null;
 
   @ApiProperty({ default: 'address@mail.ru' })
@@ -22,9 +23,11 @@ export class CreateOrganizationDto {
   contact: string;
 
   @ApiProperty({ default: 'Нижний Новгород' })
+  @IsOptional()
   address: string | null;
 
   @ApiProperty({ default: 'ооо.nn' })
+  @IsOptional()
   @IsFQDN()
   website: string | null;
 }

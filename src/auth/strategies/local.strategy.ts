@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
 
@@ -15,6 +15,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
     if (!user) {
       throw new UnauthorizedException('Email or password are incorrect');
+    }
+
+    if (!user.isVerified) {
+      throw new ForbiddenException('Researcher is not verified');
     }
 
     return user;
